@@ -1,0 +1,50 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>URL Short</title>
+    <link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous"/>
+</head>
+<body>
+    <div class="container mt-3">
+        <h2>URL Short</h2>
+        <form action="/short" method="post">
+            <input type="text" name="longURL" placeholder="Please Enter URL" class="form-control">
+            <button type="submit" class="btn btn-primary">Short</button>
+        </form>
+        <div class="mt-3">
+            <strong>Shorted URL:</strong>
+            <a  th:text="${shortURL}" target="_blank" id="shortUrlLink" onclick="sendDataToController()"></a>
+            <p id="urlerror"></p>
+        </div>
+    </div>
+</body>
+ <script type="text/javascript">
+        function sendDataToController() {
+            const shortUrlLink = document.getElementById("shortUrlLink");
+            const shortUrl = shortUrlLink.textContent;
+            fetch('/sendGetRequest?shortUrl=' +shortUrl)
+                .then(response => {
+                	 const loginURL = response.headers.get('Login-URL');
+                     if (loginURL) {
+                    	 if (loginURL.startsWith('https')) {
+                             console.log('Login URL:', loginURL);
+                              window.location.href = loginURL;
+                         } else {
+                             const errorMessage = 'URL is expired or does not exist!';
+                             document.getElementById('urlerror').textContent = errorMessage;
+                         }
+                     } else {
+                         const errorMessage = 'URL is expired or does not exist!';
+                         document.getElementById('urlerror').textContent = errorMessage;
+                     }
+                })
+                .catch(error => {
+                   alert('Error sending GET request:');
+                });
+            
+        }
+    </script>
+
+</html>
